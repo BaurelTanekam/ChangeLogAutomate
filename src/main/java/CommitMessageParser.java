@@ -11,6 +11,10 @@ public class CommitMessageParser {
 
     private final Pattern CONVENTION_PATTERN = Pattern.compile("^(feat|fix|docs|style|refactor|test|chore)(\\(.+\\))?!?:\\s*(.+)$");
 
+    /**
+     * @param commitMessage
+     * @return
+     */
     public LogEntry parseCommitMessage(String commitMessage){
         if (commitMessage == null || commitMessage.trim().isEmpty()){
             return null;
@@ -30,6 +34,10 @@ public class CommitMessageParser {
         return new LogEntry(category, cleanupMessage(message));
     }
 
+    /**
+     * @param message
+     * @return
+     */
     private String cleanupMessage(String message) {
         // Nettoyer le message (supprimer les prefixes comme "fix:", etc.)
         return message.replaceAll("^(feat|fix|add|implement|refactor|update|docs?):\\s*", "")
@@ -37,6 +45,10 @@ public class CommitMessageParser {
                 .trim();
     }
 
+    /**
+     * @param type
+     * @return
+     */
     private String mapConventionalType(String type) {
         switch (type.toLowerCase()) {
             case "feat": return "Added";
@@ -48,6 +60,10 @@ public class CommitMessageParser {
         }
     }
 
+    /**
+     * @param message
+     * @return
+     */
     private  String detectCategoryFromKeywords(String message) {
         if (FEAT_PATTERN.matcher(message).matches()) {
             return "Added";
@@ -61,6 +77,10 @@ public class CommitMessageParser {
         return "Changed"; // As default value
     }
 
+    /**
+     * @param commitMessage
+     * @return
+     */
     private boolean shouldIgnoreCommit(String commitMessage){
 
         if (commitMessage == null) return true;
@@ -73,6 +93,10 @@ public class CommitMessageParser {
                 loweString.matches("^\\s*$");
     }
 
+    /**
+     * @param commiList
+     * @return
+     */
     public  List<LogEntry> parseCommits(List<GitCommit> commiList){
         List<LogEntry> result = new ArrayList<>();
 
