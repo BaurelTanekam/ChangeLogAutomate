@@ -21,7 +21,7 @@ public class LogService {
                 System.exit(1);
             }
 
-            System.out.println("Starting automatic chnagelog genration...");
+            System.out.println("Starting automatic changelog generation...");
 
             List<GitCommit> commits = gitService.getCommitsSinceLastVersion();
             if(commits.isEmpty()){
