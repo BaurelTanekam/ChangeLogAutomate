@@ -97,7 +97,7 @@ public class CommitMessageParser {
      * @param commiList
      * @return
      */
-    public  List<LogEntry> parseCommits(List<GitCommit> commiList){
+    public List<LogEntry> parseCommits(List<GitCommit> commiList){
         List<LogEntry> result = new ArrayList<>();
 
         for (GitCommit commit : commiList) {

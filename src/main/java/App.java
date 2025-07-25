@@ -1,5 +1,13 @@
+
+
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello");
+        try {
+
+            
+        } catch (Exception e) {
+            System.err.println("Error generating changelog: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
