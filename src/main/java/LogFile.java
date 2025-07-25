@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 public class LogFile {
+
+    private static final String CHANGELOG_FILE = "src\\main\\java\\CHANGELOG.md";
+
     public void updateChangeLog(List<LogEntry> entrieList) throws IOException{
         Map<String, List<LogEntry>> grouped = new HashMap();
 
@@ -48,14 +51,14 @@ public class LogFile {
         appendexistingChangeLog(content);
 
         //save
-        Path path = Paths.get(".");
+        Path path = Paths.get(CHANGELOG_FILE);
         Files.write(path, content.toString().getBytes(StandardCharsets.UTF_8));
 
     }
 
     private void appendexistingChangeLog(StringBuilder content) throws IOException {
         
-        Path path = Paths.get(".");
+        Path path = Paths.get(CHANGELOG_FILE);
         if (Files.exists(path)) {
             List<String> existingLines = Files.readAllLines(path, StandardCharsets.UTF_8);
             boolean foundFirstVersion = false;

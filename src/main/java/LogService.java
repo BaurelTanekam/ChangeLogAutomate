@@ -11,7 +11,7 @@ public class LogService {
         this.logFile = new LogFile();
     }
 
-    public void generateChangelol(){
+    public void generateChangelog(){
         try {
             List<GitCommit> commits = gitService.getCommitsSinceLastVersion();
             log("Found " + commits.size() + " commits to process.");
