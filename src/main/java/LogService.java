@@ -26,6 +26,17 @@ public class LogService {
         }
     }
 
+    private boolean isGitRepository(){
+        try {
+            ProcessBuilder pb = new ProcessBuilder("git", "rev-parse", "--git-dir");
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            return exitCode == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private void log(String string) {
         System.out.println(string);
     }
