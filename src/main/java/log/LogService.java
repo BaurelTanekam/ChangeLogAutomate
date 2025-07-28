@@ -1,3 +1,9 @@
+package log;
+
+import git.CommitMessageParser;
+import git.GitCommit;
+import git.GitService;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;

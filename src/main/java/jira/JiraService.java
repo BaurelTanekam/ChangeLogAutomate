@@ -13,6 +13,7 @@ public class JiraService {
     private LocalDate updated;
     private String assigned;
     private String reporter;
+    private String issueType;
     private List<JiraComment> comments;
 
     public JiraService(){
@@ -86,6 +87,15 @@ public class JiraService {
         this.reporter = reporter;
     }
 
+    public String getIssueType() {
+        return issueType;
+    }
+
+
+    public void setIssueType(String issueType) {
+        this.issueType = issueType;
+    }
+
     public List<JiraComment> getComments() {
         return comments;
     }
@@ -100,6 +110,7 @@ public class JiraService {
         StringBuilder sb = new StringBuilder();
         sb.append("==== JIRA: ").append(key).append(" ===\n");
         sb.append("Priority: ").append(priority).append("\n");
+        sb.append("IssueType: ").append(issueType).append("\n");
         sb.append("Status: ").append(status).append("\n");
         sb.append("Title: ").append(title).append("\n");
         sb.append("Created: ").append(created).append("\n");

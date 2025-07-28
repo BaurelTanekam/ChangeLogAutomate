@@ -1,3 +1,5 @@
+package git;
+
 public class GitCommit {
     private String hash;
     private String message;
