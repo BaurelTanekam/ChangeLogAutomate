@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 
@@ -26,7 +24,7 @@ public class JiraIssueFetcher {
 
     //Fields to receive
 
-    private final String FIELDS = "priority,issueType,status,title,created,updated,assigned,reporter";
+    private final String FIELDS = "priority,issuetype,status,summary,created,updated,assignee,reporter,comment";
 
     public JiraIssueFetcher(String jiraBaseUrl, String baseToken){
         this.httpClient = HttpClients.createDefault();
@@ -35,13 +33,12 @@ public class JiraIssueFetcher {
         this.authHeader = baseToken;
     }
 
-    public JiraService fetchIssue(String issueKey) throws IOException, JiraException{
-        String url = jiraBaseUrl + "rest/api/2/issue" + issueKey + "?fields=" + FIELDS;
+    public JiraService fetchIssue(String issueKey) throws IOException, JiraException, ProtocolException {
+        String url = jiraBaseUrl + "rest/api/latest/issue/" + issueKey + "?fields=" + FIELDS;
 
         HttpGet request = new HttpGet(url);
-        request.setHeader("Authorization", authHeader);
         request.setHeader("Accept", "application/json");
-        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Authorization",  "Bearer "+ authHeader);
 
         HttpClientResponseHandler<JiraService> responseHandler = new HttpClientResponseHandler<JiraService>() {
             public JiraService handleResponse(ClassicHttpResponse response) throws IOException, ParseException {
@@ -49,9 +46,25 @@ public class JiraIssueFetcher {
                 HttpEntity entity = response.getEntity();
                 String responseBody = entity != null ? EntityUtils.toString(entity) : "";
 
+
+                // Check if response is empty or not JSON
+                if (responseBody.trim().isEmpty()) {
+                    throw new RuntimeException(new JiraException("Server returned empty response"));
+                }
+
+                // Check if response is HTML (common error indicator)
+                if (responseBody.trim().startsWith("<")) {
+                    throw new RuntimeException(new JiraException("Server returned HTML instead of JSON. This usually indicates authentication issues or wrong URL. Response: " + responseBody.substring(0, Math.min(200, responseBody.length()))));
+                }
+
+                // Check if response looks like JSON
+                if (!responseBody.trim().startsWith("{") && !responseBody.trim().startsWith("[")) {
+                    throw new RuntimeException(new JiraException("Server returned non-JSON response: " + responseBody.substring(0, Math.min(200, responseBody.length()))));
+                }
+
                 if(statusCode == HttpStatus.SC_OK){
 
-                    return parseJiraIssue(responseBody, issueKey);
+                    return  parseJiraIssue(responseBody, issueKey);
 
                 }else if (statusCode == HttpStatus.SC_NOT_FOUND) {
                     try {
@@ -76,49 +89,67 @@ public class JiraIssueFetcher {
         };
 
         try {
-            return httpClient.execute(request, responseHandler); 
+            return httpClient.execute(request, responseHandler);
         } catch(IOException e){
-            throw new IOException("Error: " + e.getMessage(), e);
+            throw new IOException("Error executing request: " + e.getMessage(), e);
         }
     }
 
     private JiraService parseJiraIssue(String responseBody, String issueKey) throws IOException {
-        JsonNode root = objectMapper.readTree(responseBody);
-        JsonNode fields = root.path("fields");
 
-        JiraService issue = new JiraService();
-        issue.setKey(issueKey);
+        try{
+                JsonNode root = objectMapper.readTree(responseBody);
+                JsonNode fields = root.path("fields");
 
-        JsonNode priority = fields.path("priority");
-        if (!priority.isMissingNode()){
-            issue.setPriority(getTextValue(priority, "name: "));
+                JiraService issue = new JiraService();
+                issue.setKey(issueKey);
+
+                // Fixed field access - remove the "name: " prefix and access correctly
+                JsonNode priority = fields.path("priority");
+                if (!priority.isMissingNode() && !priority.isNull()){
+                    issue.setPriority(priority.path("name").asText());
+                }
+
+                JsonNode issueType = fields.path("issuetype"); // Fixed: was "issueType"
+                if (!issueType.isMissingNode() && !issueType.isNull()){
+                    issue.setIssueType(issueType.path("name").asText());
+                }
+
+                JsonNode status = fields.path("status");
+                if (!status.isMissingNode() && !status.isNull()){
+                    issue.setStatus(status.path("name").asText());
+                }
+
+                JsonNode assignee = fields.path("assignee"); // Fixed: was "assigned"
+                if (!assignee.isMissingNode() && !assignee.isNull()) {
+                    issue.setAssigned(assignee.path("displayName").asText());
+                }
+
+                JsonNode reporter = fields.path("reporter");
+                if (!reporter.isMissingNode() && !reporter.isNull()) {
+                    issue.setReporter(reporter.path("displayName").asText());
+                }
+
+                // Fixed: access summary field
+                JsonNode summary = fields.path("summary");
+                if (!summary.isMissingNode() && !summary.isNull()) {
+                    issue.setTitle(summary.asText());
+                }
+
+                JsonNode commentNode = fields.path("comment");
+                if (!commentNode.isMissingNode() && !commentNode.isNull()){
+                    issue.setComments(parseComments(commentNode));
+                }
+
+            return issue;
+        }catch(JsonParseException e){
+            System.err.println("JSON Parse Error. Response body was:");
+            System.err.println("'" + responseBody + "'");
+            System.err.println("Response length: " + responseBody.length());
+            System.err.println("First 100 characters: '" + responseBody.substring(0, Math.min(100, responseBody.length())) + "'");
+            throw new IOException("Failed to parse JSON response: " + e.getMessage() + ". Response: " + responseBody.substring(0, Math.min(200, responseBody.length())), e);
         }
 
-        JsonNode issueType = fields.path("issueType");
-        if (!issueType.isMissingNode()){
-            issue.setIssueType(getTextValue(issueType, "name: "));
-        }
-
-        JsonNode status = fields.path("status");
-        if (!status.isMissingNode()){
-            issue.setStatus(getTextValue(status, "name: "));
-        }
-
-        JsonNode assigned = fields.path("assigned");
-        if (!assigned.isMissingNode()) {
-            issue.setAssigned(getTextValue(assigned, "Assigned: "));
-        }
-
-        JsonNode reporter = fields.path("reporter");
-        if (!reporter.isMissingNode()) {
-            issue.setReporter(getTextValue(reporter, "Reporter: "));
-        }
-
-        JsonNode commentNode = fields.path("comment: ");
-        if (!commentNode.isMissingNode()){
-            issue.setComments(parseComments(commentNode));
-        }
-        return issue;
     }
 
     private String getTextValue(JsonNode node, String fieldName) {
@@ -126,31 +157,36 @@ public class JiraIssueFetcher {
         return field.isMissingNode() ? null : field.asText();
     }
 
-    private List<JiraComment> parseComments(JsonNode commentNode) {
-        List<JiraComment> comments = new ArrayList<>();
+private List<JiraComment> parseComments(JsonNode commentNode) {
+    List<JiraComment> comments = new ArrayList<>();
 
-        if (!commentNode.isMissingNode()){
-            JsonNode commentsArray = commentNode.path("comments");
-            if (commentsArray.isArray()){
-                for (JsonNode commentJson : commentsArray){
-                    JiraComment comment = new JiraComment();
-                    comment.setId(getTextValue(commentJson, "id"));
-                    comment.setBodyComment(getTextValue(commentJson, "body"));
+    if (!commentNode.isMissingNode() && !commentNode.isNull()){
+        JsonNode commentsArray = commentNode.path("comments");
+        if (commentsArray.isArray()){
+            for (JsonNode commentJson : commentsArray){
+                JiraComment comment = new JiraComment();
+                comment.setId(commentJson.path("id").asText());
 
-                    JsonNode author = commentJson.path("author");
-                    if (!author.isMissingNode()) {
-                        comment.setAuthor(getTextValue(author, "name"));
-                    }
-
-                    comment.setCreatedComment(comment.getCreatedComment());
-                    comment.setUpdatedComment(comment.getUpdatedComment());
-
-                    comments.add(comment);
+                // Handle body - it might be a string or complex object
+                JsonNode bodyNode = commentJson.path("body");
+                if (bodyNode.isTextual()) {
+                    comment.setBodyComment(bodyNode.asText());
+                } else if (bodyNode.isObject()) {
+                    // For newer JIRA versions, body might be in ADF format
+                    comment.setBodyComment(bodyNode.toString()); // Or parse ADF if needed
                 }
+
+                JsonNode author = commentJson.path("author");
+                if (!author.isMissingNode() && !author.isNull()) {
+                    comment.setAuthor(author.path("displayName").asText());
+                }
+
+                comments.add(comment);
             }
         }
-        return comments;
     }
+    return comments;
+}
 
     public void closeHttp() throws IOException{
         if (httpClient != null){

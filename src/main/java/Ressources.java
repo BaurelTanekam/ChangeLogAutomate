@@ -6,6 +6,7 @@ public class Ressources {
     //Get Username and Token
     public static final String TOKEN = dotenv.get("API_TOKEN");
     public static final String USER = dotenv.get("USERNAME");
+    public static final String URI = dotenv.get("URI");
 
     //
     static {

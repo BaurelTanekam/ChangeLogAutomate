@@ -50,11 +50,14 @@ public class JiraComment {
     }
 
     @Override
-    public String toString(){
-        return String.format("👤 %s (%s):\n" + //
+    public String toString() {
+        return String.format("👤 %s :\n" + //
                         "📝 %s\n" + //
-                        "📅 %s\n 📅 %s\n", author, bodyComment, 
-                        createdComment != null ? createdComment.toString() : "Unknown Date.", 
-                        updatedComment != null ? updatedComment.toString() : "Unknown Date.");
+                        "📅 Created: %s\n" + //
+                        "📅 Updated: %s\n",
+                author != null ? author : "Unknown Author",
+                bodyComment != null ? bodyComment : "No Comment",
+                createdComment != null ? createdComment.toString() : "Unknown Date",
+                updatedComment != null ? updatedComment.toString() : "Unknown Date");
     }
 }
