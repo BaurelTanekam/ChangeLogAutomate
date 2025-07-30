@@ -1,5 +1,7 @@
 package log;
 
+import jira.JiraComment;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -36,7 +38,7 @@ public class LogFile {
         //add section manually
         List<String> categories = Arrays.asList("Added", "Changed", "Fixed", "Removed");
         for (String category : categories) {
-            content.append("### ").append(category).append("\n");
+            content.append("## ").append(category).append("\n");
             List<LogEntry> categoryEntries = grouped.get(category);
 
             if (categoryEntries == null || categoryEntries.isEmpty()) {
@@ -111,4 +113,36 @@ public class LogFile {
         }
         return grouped;
     }
+
+    public void addJiraCommentsToChangeLog(List<JiraComment> jiraComments) throws IOException {
+        StringBuilder content = new StringBuilder();
+
+        //Verify
+        if (jiraComments == null || jiraComments.isEmpty()){
+            System.out.println("No Jira Comments available to add.");
+            return;
+        }
+
+        //Load actuall ChangeLog file
+        Path path = Paths.get(CHANGELOG_FILE);
+        List<String> existingLines = new ArrayList<>();
+        if (Files.exists(path)){
+            existingLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+        }
+
+        //Comment - Section
+        content.append("\n## Jira Comments\n");
+        for (JiraComment comment : jiraComments){
+            content.append("- ").append(comment).append("\n");
+        }
+
+        //Fusion
+        for (String line : existingLines){
+            content.append(line).append("\n");
+        }
+
+        //rewrite in ChangeLog file
+        Files.write(path, content.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
 }

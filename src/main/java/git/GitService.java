@@ -61,7 +61,7 @@ public class GitService {
     }
 
 
-    private String getLastTag() {
+    public String getLastTag() {
         try {
             Process process = new ProcessBuilder("git", "describe", "--tags", "--abbrev=0").start();
 
@@ -84,8 +84,15 @@ public class GitService {
         
     }
 
+    private String stripPrefix(String tag) {
+        if (tag.startsWith("v")) {
+            return tag.substring(1); // Supprime le préfixe 'v'
+        }
+        return tag; // Retourne directement le tag s'il n'y a pas de préfixe
+    }
+
     public String incrementVerionTaginChangeLog(String version){
-        String[] parts = version.split("\\.");
+        String[] parts = stripPrefix(version).split("\\.");
 
         if (parts.length < 3){
             throw new IllegalArgumentException("Inavlid version format: " + version);
@@ -103,12 +110,12 @@ public class GitService {
 
     // Crée un nouveau tag dans le dépôt
     public void createAndPushTag(String tagName) throws IOException, InterruptedException {
-        // Étape 1 : Créez le tag localement
+        // tag automatically created
         ProcessBuilder createTag = new ProcessBuilder("git", "tag", tagName);
         Process createProcess = createTag.start();
         createProcess.waitFor();
 
-        // Étape 2 : Poussez le tag vers le dépôt distant
+        // push
         ProcessBuilder pushTag = new ProcessBuilder("git", "push", "origin", tagName);
         Process pushProcess = pushTag.start();
         pushProcess.waitFor();

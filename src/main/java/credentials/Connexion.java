@@ -1,4 +1,4 @@
-import java.util.Base64;
+package credentials;
 
 public class Connexion {
 

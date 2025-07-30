@@ -1,3 +1,5 @@
+package credentials;
+
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class Ressources {

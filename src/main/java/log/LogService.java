@@ -1,8 +1,11 @@
 package log;
 
+import credentials.Connexion;
 import git.CommitMessageParser;
 import git.GitCommit;
 import git.GitService;
+import jira.JiraIssueFetcher;
+import jira.JiraService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,6 +15,8 @@ public class LogService {
     private GitService gitService;
     private CommitMessageParser commitMessageParser;
     private LogFile logFile;
+    JiraIssueFetcher fetcher = new JiraIssueFetcher(Connexion.URL, Connexion.ENCODED);
+
 
     public LogService() {
         this.gitService = new GitService();
@@ -27,7 +32,13 @@ public class LogService {
                 System.exit(1);
             }
 
+            // Étape 1 : Récupérer les commits depuis le dernier tag
             System.out.println("Starting automatic changelog generation...");
+
+            JiraService issue = fetcher.fetchIssue("MSPINTERN-2551");
+            if (issue.getComments() != null && !issue.getComments().isEmpty()){
+                logFile.addJiraCommentsToChangeLog(issue.getComments());
+            }
 
             List<GitCommit> commits = gitService.getCommitsSinceLastVersion();
             if(commits.isEmpty()){
@@ -37,6 +48,10 @@ public class LogService {
 
             log("Found " + commits.size() + " commits to process.");
 
+            //Tag increment and push
+            String newVersion = gitService.incrementVerionTaginChangeLog(gitService.getLastTag());
+            System.out.println("New Version: "+ newVersion);
+
             List<LogEntry> entries = commitMessageParser.parseCommits(commits);
             log("Generated " + entries.size() + " changedlog entries");
             System.out.println("\n Preview of changes:");
@@ -45,6 +60,11 @@ public class LogService {
             );
 
             logFile.updateChangeLog(entries);
+            logFile.addReleaseVersionToChangeLog(newVersion, entries);
+            gitService.createAndPushTag(newVersion);
+            log("Changelog updated and new version tagged successfully.");
+
+
             log("changelog updated succesfully.");
         } catch (Exception e) {
             logError("Error during changelog generation: " + e.getMessage(), e);

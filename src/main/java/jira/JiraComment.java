@@ -52,9 +52,8 @@ public class JiraComment {
 
     @Override
     public String toString() {
-        return String.format("👤 %s :\n" + //
+        return String.format(
                         "📝 %s\n",
-                author != null ? author : "Unknown Author",
                 bodyComment != null ? bodyComment : "No Comment");
     }
 }
