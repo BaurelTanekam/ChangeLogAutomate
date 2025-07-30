@@ -1,6 +1,7 @@
 package jira;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class JiraComment {
     private String id;
@@ -52,12 +53,8 @@ public class JiraComment {
     @Override
     public String toString() {
         return String.format("👤 %s :\n" + //
-                        "📝 %s\n" + //
-                        "📅 Created: %s\n" + //
-                        "📅 Updated: %s\n",
+                        "📝 %s\n",
                 author != null ? author : "Unknown Author",
-                bodyComment != null ? bodyComment : "No Comment",
-                createdComment != null ? createdComment.toString() : "Unknown Date",
-                updatedComment != null ? updatedComment.toString() : "Unknown Date");
+                bodyComment != null ? bodyComment : "No Comment");
     }
 }

@@ -1,6 +1,7 @@
 package jira;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +105,31 @@ public class JiraService {
         this.comments = comments;
     }
 
+
+    public void printComment(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        if (this.getComments() != null && !this.getComments().isEmpty()){
+            System.out.println("\n=== Commentaires ====");
+
+            for (JiraComment comment : this.getComments()){
+                if (comment.getAuthor() == null || comment.getBodyComment() == null) {
+                    comment.setAuthor("Unknown Author");
+                    comment.setBodyComment("Kein Comment.");
+                }
+                String authorDisplayNmae = comment.getAuthor();
+                String body = comment.getBodyComment();
+                String created = (comment.getCreatedComment() != null ? comment.getCreatedComment().toString() : "Unknown Date");
+                String updated = (comment.getUpdatedComment() != null ? comment.getUpdatedComment().format(formatter) : "Unknown Date");
+
+                System.out.println("💬 " + authorDisplayNmae + ": "
+                        + body.substring(0, Math.min(100, body.length()))
+                        + "... ");
+                System.out.println("📅 Created: " + created);
+                System.out.println("📅 Updated: " + updated);
+
+            }
+        }
+    }
 
     @Override
     public String toString(){

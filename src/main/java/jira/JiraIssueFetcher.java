@@ -1,6 +1,8 @@
 package jira;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,13 +182,25 @@ private List<JiraComment> parseComments(JsonNode commentNode) {
                 if (!author.isMissingNode() && !author.isNull()) {
                     comment.setAuthor(author.path("displayName").asText());
                 }
-
+                comment.setCreatedComment(parseDateTime(getTextValue(commentJson, "created")));
+                comment.setUpdatedComment(parseDateTime(getTextValue(commentJson, "updated")));
                 comments.add(comment);
             }
         }
     }
     return comments;
 }
+
+    private LocalDateTime parseDateTime(String dateString) {
+        if (dateString == null || dateString.isEmpty()){
+            return null;
+        }
+        try{
+            return LocalDateTime.parse(dateString.substring(0,19), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public void closeHttp() throws IOException{
         if (httpClient != null){
