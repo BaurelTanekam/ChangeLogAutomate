@@ -83,4 +83,21 @@ public class GitService {
         }
         
     }
+
+    public String incrementVerionTaginChangeLog(String version){
+        String[] parts = version.split("\\.");
+
+        if (parts.length < 3){
+            throw new IllegalArgumentException("Inavlid version format: " + version);
+        }
+
+        //
+        int major = Integer.parseInt(parts[0]);
+        int minor = Integer.parseInt(parts[1]);
+        int build = Integer.parseInt(parts[2]);
+
+        build += 1;
+
+        return major + "." + minor +"." + build;
+    }
 }
