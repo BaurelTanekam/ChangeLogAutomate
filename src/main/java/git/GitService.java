@@ -100,4 +100,19 @@ public class GitService {
 
         return major + "." + minor +"." + build;
     }
+
+    // Crée un nouveau tag dans le dépôt
+    public void createAndPushTag(String tagName) throws IOException, InterruptedException {
+        // Étape 1 : Créez le tag localement
+        ProcessBuilder createTag = new ProcessBuilder("git", "tag", tagName);
+        Process createProcess = createTag.start();
+        createProcess.waitFor();
+
+        // Étape 2 : Poussez le tag vers le dépôt distant
+        ProcessBuilder pushTag = new ProcessBuilder("git", "push", "origin", tagName);
+        Process pushProcess = pushTag.start();
+        pushProcess.waitFor();
+
+        System.out.println("Tag created and pushed: " + tagName);
+    }
 }

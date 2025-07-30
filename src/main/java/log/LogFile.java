@@ -78,4 +78,37 @@ public class LogFile {
             }
         }
     }
+
+    public void addReleaseVersionToChangeLog(String version, List<LogEntry> entries) throws IOException {
+        StringBuilder content = new StringBuilder();
+
+        String releaseHeader = "## [" + version + "] - " + LocalDate.now() + "\n";
+        content.append("# Release").append(version).append("\n");
+        content.append(releaseHeader).append("\n");
+
+        //Add Categories and Entry
+        Map<String, List<LogEntry>> groupedEntries = groupedByCategory(entries);
+        for (String category : groupedEntries.keySet()){
+            content.append("###").append(category).append("\n");
+            for (LogEntry logEntry : groupedEntries.get(category)){
+                content.append("- ").append(logEntry.getDescription()).append("\n");
+            }
+            content.append("\n");
+        }
+        // Ajouter le contenu existant du changelog en bas
+         appendexistingChangeLog(content);
+
+        Path path = Paths.get(CHANGELOG_FILE);
+        Files.write(path, content.toString().getBytes(StandardCharsets.UTF_8));
+
+        System.out.println("Changelog updated with version: " + version);
+    }
+
+    private Map<String, List<LogEntry>> groupedByCategory(List<LogEntry> entries) {
+        Map<String, List<LogEntry>> grouped = new HashMap<>();
+        for (LogEntry entry : entries){
+            grouped.computeIfAbsent(entry.getCategory(), k -> new ArrayList<>()).add(entry);
+        }
+        return grouped;
+    }
 }
