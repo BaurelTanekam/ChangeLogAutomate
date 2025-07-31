@@ -84,6 +84,56 @@ public class GitService {
         
     }
 
+    public List<GitCommit> getCommitsBeforeTag(String tagName) throws IOException {
+        List<GitCommit> commits = new ArrayList<>();
+
+        //Verify if Tag exists
+        if (tagName == null || tagName.trim().isEmpty()){
+            throw new IllegalArgumentException("Tag name cannot be null or empty.");
+        }
+
+        System.out.println("Fetching commits before tag: " + tagName);
+        //Git command
+        ProcessBuilder pb = new ProcessBuilder("git", "log", tagName +"^.." + tagName, "--online", "--reverse");
+
+        try{
+            //Command execute
+            Process process = pb.start();
+
+            //check error
+            try(BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))){
+                String errorLine = errorReader.readLine();
+                if (errorLine != null){
+                    System.err.println("Git error: " + errorLine);
+                    throw new IOException("Git error: " + errorLine);
+                }
+            }
+
+            //read
+            try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+                String line;
+                while ((line = reader.readLine()) != null){
+                    String[] parts = line.split(" ", 2);
+                    if (parts.length == 2){
+                        commits.add(new GitCommit(parts[0], parts[1]));
+                    }
+                }
+            }
+
+            //
+            int exitCode = process.waitFor();
+            if (exitCode != 0){
+                throw new IOException("Git command failed with exit code: " + exitCode);
+            }
+
+        }catch (InterruptedException e ){
+            Thread.currentThread().interrupt();
+            throw new IOException("Git command was interrupt", e);
+        }
+
+        return commits;
+    }
+
     private String stripPrefix(String tag) {
         if (tag.startsWith("v")) {
             return tag.substring(1); // Supprime le préfixe 'v'

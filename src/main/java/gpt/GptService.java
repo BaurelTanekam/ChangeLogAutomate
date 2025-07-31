@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GptServices {
+public class GptService {
     private static final String OPENAI_API_URL= "https://api.openai.com/v1/chat/completions";
     private static final String MODEL = "gpt-4";
 
@@ -33,7 +33,7 @@ public class GptServices {
     private String API_KEY;
     private String outPutDirectory;
     
-    public GptServices(String API_KEY, String outPutDirectory){
+    public GptService(String API_KEY, String outPutDirectory){
         this.API_KEY = API_KEY;
         this.outPutDirectory = outPutDirectory;
         this.httpClient = HttpClients.createDefault();
