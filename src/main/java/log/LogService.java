@@ -24,7 +24,8 @@ public class LogService {
         this.logFile = new LogFile();
     }
 
-    public void generateChangelog(){
+    //fetchCommitsBeforeTag = true || fetchCommitsBeforetag = false
+    public void generateChangelog(boolean fetchCommitsBeforeTag){
         try {
 
             if(!isGitRepository()){
@@ -35,16 +36,30 @@ public class LogService {
             // Étape 1 : Récupérer les commits depuis le dernier tag
             System.out.println("Starting automatic changelog generation...");
 
+            //lastag
+            String lastTag = gitService.getLastTag();
+
+            //Commits
+            List<GitCommit> commits;
+            if (fetchCommitsBeforeTag){
+                System.out.println("Fetching commits before tag: " + lastTag);
+                commits = gitService.getCommitsBeforeTag(lastTag);
+            }else {
+                System.out.println("Fetching commits since last tag: " + lastTag);
+                commits = gitService.getCommitsSinceLastVersion();
+            }
+
+            if(commits.isEmpty()){
+                System.out.println("No new commits found. Changelog is up to date.");
+                return;
+            }
+
             JiraService issue = fetcher.fetchIssue("MSPINTERN-2551");
             if (issue.getComments() != null && !issue.getComments().isEmpty()){
                 logFile.addJiraCommentsToChangeLog(issue.getComments());
             }
 
-            List<GitCommit> commits = gitService.getCommitsSinceLastVersion();
-            if(commits.isEmpty()){
-                System.out.println("No new commits found. Changelog is up to date.");
-                return;
-            }
+            //List<GitCommit> commits = gitService.getCommitsSinceLastVersion();
 
             log("Found " + commits.size() + " commits to process.");
 

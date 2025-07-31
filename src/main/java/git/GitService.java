@@ -94,7 +94,7 @@ public class GitService {
 
         System.out.println("Fetching commits before tag: " + tagName);
         //Git command
-        ProcessBuilder pb = new ProcessBuilder("git", "log", tagName +"^.." + tagName, "--online", "--reverse");
+        ProcessBuilder pb = new ProcessBuilder("git", "log", tagName +"^.." + tagName, "--oneline", "--reverse");
 
         try{
             //Command execute

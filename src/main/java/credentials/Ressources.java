@@ -9,6 +9,7 @@ public class Ressources {
     public static final String TOKEN = dotenv.get("API_TOKEN");
     public static final String USER = dotenv.get("USERNAME");
     public static final String URI = dotenv.get("URI");
+    public static final String API_GPT = dotenv.get("API_TOKEN_LANGDOCK");
 
     //
     static {

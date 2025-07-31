@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import credentials.Connexion;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -30,11 +31,10 @@ public class GptService {
 
     private CloseableHttpClient httpClient;
     private ObjectMapper objectMapper;
-    private String API_KEY;
+    private String API_KEY = Connexion.GPT;
     private String outPutDirectory;
     
-    public GptService(String API_KEY, String outPutDirectory){
-        this.API_KEY = API_KEY;
+    public GptService(String outPutDirectory){
         this.outPutDirectory = outPutDirectory;
         this.httpClient = HttpClients.createDefault();
         this.objectMapper = new ObjectMapper();

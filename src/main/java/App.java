@@ -30,6 +30,6 @@ public class App {
 //            }
 //        }
         LogService logService = new LogService();
-        logService.generateChangelog();
+        logService.generateChangelog(true);
     }
 }
