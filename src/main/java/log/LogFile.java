@@ -115,8 +115,6 @@ public class LogFile {
     }
 
     public void addJiraCommentsToChangeLog(List<JiraComment> jiraComments) throws IOException {
-        StringBuilder content = new StringBuilder();
-
         //Verify
         if (jiraComments == null || jiraComments.isEmpty()){
             System.out.println("No Jira Comments available to add.");
@@ -125,24 +123,63 @@ public class LogFile {
 
         //Load actuall ChangeLog file
         Path path = Paths.get(CHANGELOG_FILE);
+        StringBuilder existingContent = new StringBuilder();
         List<String> existingLines = new ArrayList<>();
+
         if (Files.exists(path)){
             existingLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            for (String line: existingLines){
+                existingContent.append(line).append("\n");
+            }
         }
 
-        //Comment - Section
-        content.append("\n## Jira Comments\n");
-        for (JiraComment comment : jiraComments){
-            content.append("- ").append(comment).append("\n");
-        }
+        StringBuilder newCommentSection = new StringBuilder();
+        boolean jiraSectionFound = false;
 
-        //Fusion
+        //Identify a "##Jira Comments" section
         for (String line : existingLines){
-            content.append(line).append("\n");
+            if (line.trim().equalsIgnoreCase("## Jira Comments")){
+                jiraSectionFound = true;
+                break;
+            }
+        }
+
+        if (jiraComments != null && !jiraComments.isEmpty()){
+            newCommentSection.append("\n## Jira Comments");
+            for (JiraComment comment : jiraComments){
+                newCommentSection.append("- ").append(comment.getBodyComment()).append("\n");
+            }
+        }else {
+            System.out.println("No new Jira comments to add.");
+        }
+
+        //new Logic
+        String updatedContent;
+        if (jiraSectionFound){
+            StringBuilder finalContnet = new StringBuilder();
+            boolean addNewComments = false;
+
+            for (String line : existingLines){
+                finalContnet.append("\n");
+
+                if (line.trim().equalsIgnoreCase("## Jira Comments")){
+                    addNewComments = true;
+                    continue;
+                }
+            }
+             //Add comment
+            if (!addNewComments && (newCommentSection.length() > 0)){
+                finalContnet.append(newCommentSection).append("\n");
+            }
+
+            updatedContent = finalContnet.toString();
+        }else {
+            //Add Jira Section, if it does not exist
+            updatedContent = existingContent.append(newCommentSection).toString();
         }
 
         //rewrite in ChangeLog file
-        Files.write(path, content.toString().getBytes(StandardCharsets.UTF_8));
+        Files.write(path, existingContent.toString().getBytes(StandardCharsets.UTF_8));
     }
 
 }

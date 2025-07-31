@@ -97,6 +97,28 @@ public class JiraIssueFetcher {
         }
     }
 
+    public List<JiraService> fetchMultplesIssues(List<String> issueKeys){
+        //Store issue
+        List<JiraService> issues = new ArrayList<>();
+
+        for (String issueKey : issueKeys){
+            try{
+                JiraService issue = fetchIssue(issueKey);
+
+                //Add issue in the list
+                issues.add(issue);
+            }catch (JiraException e){
+                System.err.println("Error for the issue " + issueKey + ": " + e.getMessage());
+            } catch (IOException | ProtocolException e) {
+                System.err.println("Connection Error for this issue: " + issueKey + e.getMessage());
+            }catch (Exception e){
+                System.err.println("Unexpected error for this issue: " + issueKey + e.getMessage());
+            }
+        }
+        //return
+        return issues;
+    }
+
     private JiraService parseJiraIssue(String responseBody, String issueKey) throws IOException {
 
         try{
@@ -159,7 +181,7 @@ public class JiraIssueFetcher {
         return field.isMissingNode() ? null : field.asText();
     }
 
-private List<JiraComment> parseComments(JsonNode commentNode) {
+    private List<JiraComment> parseComments(JsonNode commentNode) {
     List<JiraComment> comments = new ArrayList<>();
 
     if (!commentNode.isMissingNode() && !commentNode.isNull()){
@@ -201,7 +223,7 @@ private List<JiraComment> parseComments(JsonNode commentNode) {
             return null;
         }
     }
-
+    //TODO Immer die Http Verbindung zumachen
     public void closeHttp() throws IOException{
         if (httpClient != null){
             httpClient.close();

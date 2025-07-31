@@ -61,10 +61,8 @@ public class LogService {
 
             logFile.updateChangeLog(entries);
             logFile.addReleaseVersionToChangeLog(newVersion, entries);
-            gitService.createAndPushTag(newVersion);
-            log("Changelog updated and new version tagged successfully.");
 
-
+            fetcher.closeHttp();
             log("changelog updated succesfully.");
         } catch (Exception e) {
             logError("Error during changelog generation: " + e.getMessage(), e);

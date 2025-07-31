@@ -1,8 +1,46 @@
+# Release1.0.1
+## [1.0.1] - 2025-07-31
 
-## Jira Comments
-- 📝 Hallo Johanna, magst Du bitte die Beschreibung prüfen und bei Bedarf korrigieren oder ergänzen? Gibt mir das Ticket danach bitte zurück.  
+###Added
+- [MSPINTERN-2729] fixed bug, methode updated, tag added
+- [MSPINTERN-2729] fix bug, methode updated, tag added
+- [MSPINTERN-2729] Maven dependencies added
+- [MSPINTERN-2729] jira package implemented with several methods
+- [MSPINTERN-2729] updated, fixed, implemented
+- [MSPINTERN-2729] toString Method in JiraComment class updtaed, pintComment in JiraService class implemented and parseDateTime method in JiraIssueFetcher class implemented
+- [MSPINTERN-2729] incrementVersionTaginChangeLog method implemented
+- [MSPINTERN-2729] two Methods implemented, addReleaseVersionToChangeLog and createAndPushTag added
+- [MSPINTERN-2729] method stripPrefix for a tagName,method to add comment in Changelog file implemented
 
-- 📝 Recherche und Einschätzungen
+###Changed
+- [MSPINTERN-2729] Jira Package created with Classes
+- [MSPINTERN-2729] Maven dependecy Json updated
+
+## [1.0.1] - 2025-07-30
+
+###Added
+- [MSPINTERN-2729] fixed bug, methode updated, tag added
+- [MSPINTERN-2729] fix bug, methode updated, tag added
+- [MSPINTERN-2729] Maven dependencies added
+- [MSPINTERN-2729] jira package implemented with several methods
+- [MSPINTERN-2729] updated, fixed, implemented
+- [MSPINTERN-2729] toString Method in JiraComment class updtaed, pintComment in JiraService class implemented and parseDateTime method in JiraIssueFetcher class implemented
+- [MSPINTERN-2729] incrementVersionTaginChangeLog method implemented
+- [MSPINTERN-2729] two Methods implemented, addReleaseVersionToChangeLog and createAndPushTag added
+- [MSPINTERN-2729] method stripPrefix for a tagName,method to add comment in Changelog file implemented
+
+###Changed
+- [MSPINTERN-2729] Jira Package created with Classes
+- [MSPINTERN-2729] Maven dependecy Json updated
+
+## [1.0.2] - 2025-07-30
+
+###Added
+- [MSPINTERN-2729] method stripPrefix for a tagName,method to add comment in Changelog file implemented
+
+
+## Jira Comments- Hallo Johanna, magst Du bitte die Beschreibung prüfen und bei Bedarf korrigieren oder ergänzen? Gibt mir das Ticket danach bitte zurück.  
+- Recherche und Einschätzungen
 
 *Möglicher Automatisierungsgrad*
 Es dürfte Lösungsmöglichkeiten geben in einem Spektrum zwischen kleinen Unterstützungen einzelner Teilaufgaben bis zu einer 
@@ -56,24 +94,17 @@ Es ist zu bedenken, dass Daten aus den Verträgen an verschiedene Schnittstellen
 
 *CRA*
 Das CRA fordert von Vertriebspartnern von Herstellern, dass diese stellvertretend für die Hersteller die Anforderungen des CRA zu erfüllen haben. Es ist zu prüfen, ob dies bei unserer Kooperation mit LineUp der Fall ist. Das würde voraussichtlich hinsichtlich der Dokumente bedeuten, dass wir zukünftig weitere Dokumente von LineUp erhalten und geeignet an unsere Kunden weitergeben müssen.
-
-- 📝 Moin [~nschadow], bei der Beschreibung habe ich nur ein paar Kleinigkeiten angepasst, ansonsten ist das so vollständig. 
-
-- 📝 Danke, [~msp.j.neumann]!
-
-- 📝 Hallo Johanna, magst Du bitte ein paar Originaldokumente von Lineup hier an das Ticket hängen, die Nazar und Baurel zur Entwicklung benutzen können und zusätzlich ein oder mehrere fertige Dokumente, damit wir eine klare Zielvorgabe zum Vergleichen haben?
-
-- 📝 Moin Nico, ich habe mit den beiden gesprochen und die beigefügten Dateien erklärt. Sie schauen es sich mal an.
-
-- 📝 [~msp.j.sievering], perfekt, vielen Dank!
-
-- 📝 ChatGpt-API-Dokumentation:
+- Moin [~nschadow], bei der Beschreibung habe ich nur ein paar Kleinigkeiten angepasst, ansonsten ist das so vollständig. 
+- Danke, [~msp.j.neumann]!
+- Hallo Johanna, magst Du bitte ein paar Originaldokumente von Lineup hier an das Ticket hängen, die Nazar und Baurel zur Entwicklung benutzen können und zusätzlich ein oder mehrere fertige Dokumente, damit wir eine klare Zielvorgabe zum Vergleichen haben?
+- Moin Nico, ich habe mit den beiden gesprochen und die beigefügten Dateien erklärt. Sie schauen es sich mal an.
+- [~msp.j.sievering], perfekt, vielen Dank!
+- ChatGpt-API-Dokumentation:
 https://platform.openai.com/docs/api-reference/making-requests
 
 Einen Token für die ersten Tests habe ich [~msp.b.tanekam] und [~msp.n.buzyl] soeben als PrivateBin-Link geschickt.
 
-
-- 📝 Hallo [~msp.j.sievering] ,
+- Hallo [~msp.j.sievering] ,
 
 Mir fehlt jetzt nur noch deine Einschätzung. Wir haben ChatGPT für die Textübersetzung integriert, und dort gibt es eine Einstellungsoption für den „Grad der Menschlichkeit“ (temperature) – also wie detailliert die Übersetzung erfolgt. Ich habe eine Datei ([^Vergleich_AI_Uebersetzung.docx]) erstellt, in der ich den Originaltext sowie die Übersetzungen mit verschiedenen Stufen bereitgestellt habe (die direkt nebeneinander stehenden Versionen sind sich sehr ähnlich oder können sogar identisch sein).
 
@@ -84,33 +115,24 @@ Außerdem habe ich die übersetzte Datei ([^Englisches Original_EN-DE_Java.docx]
 Du kannst auch darauf achten, dass in einigen übersetzten Abschnitten der Stil verändert wurde. Ich konnte bisher nicht herausfinden, woran das liegt. Falls es hilft, kann ich ein Standardstil setzen oder die Formatierung in Word manuell anpassen.
 
 Falls du die Umwandlung noch detaillierter prüfen möchtest, kannst du auch weitere Dokumente schicken, mit denen du das Programm testen möchtest.
-
-- 📝 Hallo Johanna,
+- Hallo Johanna,
 [Das Programm|https://github.com/MSP-Medien-Systempartner/lineup-documentation-converter/tree/nazarbuzyl-msp] ist praktisch vollständig fertig, es fehlen nur noch einige spezifische Klarstellungen von Ihrer Seite, die im Kommentar unten stehen.
 
 Das Programm ermöglicht es, durch Angabe des Pfads zu einem Ordner/Datei, in dem sich die zu übersetzenden Dateien befinden, und eines zweiten Arguments, das den Speicherort der übersetzten Dateien angibt, alle Dateien zu übersetzen. Ein zusätzliches Argument für eine genauere Übersetzung kann der Pfad zu einem Glossar sein, in dem die genauen Übersetzungen für Fachbegriffe angegeben sind.
-
-- 📝 Lieber [~msp.n.buzyl], das klingt ziemlich cool - wenn Ihr fertig seid, würde ich mir die Lösung gern eimmal vorstellen lassen. Magst Du dazu vielleicht einmal nach einem Termin schauen - gern zusammen mit Johanna, Iris, Baurel und Nico ...beste Grüße Heike 
-
-- 📝 Moin zusammen, 
+- Lieber [~msp.n.buzyl], das klingt ziemlich cool - wenn Ihr fertig seid, würde ich mir die Lösung gern eimmal vorstellen lassen. Magst Du dazu vielleicht einmal nach einem Termin schauen - gern zusammen mit Johanna, Iris, Baurel und Nico ...beste Grüße Heike 
+- Moin zusammen, 
 
 ich habe mir die Versionen angeschaut. Bei der Temperatur bin ich noch unschlüssig, stellenweise gefällt mit 0.3 oder auch 0.9 ganz gut, letztlich sind aber alle dazwischenliegenden auch in Ordnung. Eine Nacharbeitung des Dokuments ist in jeden Fall noch erforderlich um das Layout zu finalisieren, Logos, Kopf- und Fußzeilen anzupassen. Insgesamt würde es den Prozess aber auch jetzt schon erleichtern, da die viele Klickerei für das Zusammensetzen der Bausteine entfällt. Ich hänge euch probeweise mal noch eine weitere Datei an, diesmal nur das englische Original, vielleicht könnt ihr die auch nochmal probeweise durchspielen? 
 
 Danke 
-
-- 📝 Moin,
+- Moin,
 Ich habe das neue Dokument durch das Programm laufen lassen. Ich füge das neue übersetzende Dokument([^2024-10-31 - MAS - INTS-1382 Invoice Printing OUTBOUND v2.0_EN-DE.docx]) hier bei. Beim Durchsehen kann man einige Ungenauigkeiten im Format erkennen:
  * 1, 7.3: Einige Texte kann die KI nicht übersetzen oder hält sie nicht für notwendig zu übersetzen. 
  * 7.3: Einige Zeilen “verstecken” sich hinter anderen (Testsystem:, Server:…)
  * 8.1: das Programm liest die Formatvorlage so, wie sie vorgegeben ist, daher erscheinen blaue Bulletpoints.
 
 Für dieses Dokument ist auch eine Temperatur von 0,3 eingestellt.
-
-- 📝 Hi [~msp.n.buzyl], wie besprochen, hier nochmal ein komplexes Dokument zum testen. Die "versteckten" Zeilen machen mir etwas Sorgen, da diese nicht leicht zu lokalisieren sind. Das gerade angehängte Dokument hat auch nochmal Einzüge, hängende, Einzüge, eine Tabelle, eine XML.. schau mal bitte, wie das verarbeitet wird. Danke!
-
-- 📝 Das neue Dokument wurde problemlos durch das Programm verarbeitet. Es gab keine Abweichungen wie “versteckte” Zeilen. [^2024-05-28 - MAS - INTS-1379 Procset Integration v1.2_EN-DE_v4.docx]
-
-- 📝 [~msp.n.buzyl] ich habe nun 3 noch gar nicht bearbeitete Dokumente von LUP bekommen, die sind so im Original. Können wir die auch noch ausprobieren? Habe ich gerade angehangen. Danke!
-
-- 📝 [~msp.j.sievering] die Dokumente wurden getestet. Ich hänge dann gleich alle übersetzten Dokumente an. Das Problem mit den "versteckten" Zeilen haben wir gelöst. Eine Bemerkung: Im Dokument ([^2024-10-31 - MAS - INTS-1382 Invoice Printing OUTBOUND v2.0_EN-DE_v2.0.docx] ist in einigen Fällen der Abstand zwischen den Absätzen nach der Bearbeitung zu groß, aber das kann leicht manuell gelöst werden, wenn die Formatvorlage geändert wird.
-
+- Hi [~msp.n.buzyl], wie besprochen, hier nochmal ein komplexes Dokument zum testen. Die "versteckten" Zeilen machen mir etwas Sorgen, da diese nicht leicht zu lokalisieren sind. Das gerade angehängte Dokument hat auch nochmal Einzüge, hängende, Einzüge, eine Tabelle, eine XML.. schau mal bitte, wie das verarbeitet wird. Danke!
+- Das neue Dokument wurde problemlos durch das Programm verarbeitet. Es gab keine Abweichungen wie “versteckte” Zeilen. [^2024-05-28 - MAS - INTS-1379 Procset Integration v1.2_EN-DE_v4.docx]
+- [~msp.n.buzyl] ich habe nun 3 noch gar nicht bearbeitete Dokumente von LUP bekommen, die sind so im Original. Können wir die auch noch ausprobieren? Habe ich gerade angehangen. Danke!
+- [~msp.j.sievering] die Dokumente wurden getestet. Ich hänge dann gleich alle übersetzten Dokumente an. Das Problem mit den "versteckten" Zeilen haben wir gelöst. Eine Bemerkung: Im Dokument ([^2024-10-31 - MAS - INTS-1382 Invoice Printing OUTBOUND v2.0_EN-DE_v2.0.docx] ist in einigen Fällen der Abstand zwischen den Absätzen nach der Bearbeitung zu groß, aber das kann leicht manuell gelöst werden, wenn die Formatvorlage geändert wird.
