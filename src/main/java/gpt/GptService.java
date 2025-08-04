@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GptService {
-    private static final String OPENAI_API_URL= "https://api.openai.com/v1/chat/completions";
-    private static final String MODEL = "gpt-4";
+    private static final String OPENAI_API_URL= "https://api.langdock.com/openai/eu/v1/chat/completions";
+    private static final String MODEL = "gpt-4o-mini";
 
     private CloseableHttpClient httpClient;
     private ObjectMapper objectMapper;
@@ -101,7 +101,7 @@ public class GptService {
 
         HttpPost request = new HttpPost(OPENAI_API_URL);
 
-        request.setHeader("Authorization", "Bearer" + API_KEY);
+        request.setHeader("Authorization", API_KEY);
         request.setHeader("Content-Type", "application/json");
 
         //Create request Body
@@ -263,25 +263,31 @@ public class GptService {
 
     private String createChangelogPrompt(String changelogContent) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("You are a technical writer who creates user-friendly release notes. ");
-        prompt.append("Please analyze the following changelog/git commit messages and create a clear, ");
-        prompt.append("non-technical summary that regular users can understand.\n\n");
+        prompt.append("You are a professional technical writer who specializes in creating clear, user-friendly, and comprehensive release notes for end users.\n\n");
+
+        prompt.append("Your task is to analyze the following unstructured changelog data, Git commit messages, and JIRA comments, and create a polished, easy-to-read release summary for a non-technical audience.\n");
+        prompt.append("The resulting summary must be informative, GDPR-compliant, and written in plain language.\n\n");
 
         prompt.append("**Instructions:**\n");
-        prompt.append("1. Group related changes into categories (New Features, Improvements, Bug Fixes, etc.)\n");
-        prompt.append("2. Use simple, non-technical language\n");
-        prompt.append("3. Focus on user benefits, not technical implementation\n");
-        prompt.append("4. Format as markdown with proper headings\n");
-        prompt.append("5. If commit messages mention ticket numbers (like PROJ-123), ");
-        prompt.append("briefly explain what those changes mean for users\n");
-        prompt.append("6. Include a brief introduction paragraph\n\n");
+        prompt.append("1. Group related updates into clear categories:\n");
+        prompt.append("   - New Features\n");
+        prompt.append("   - Improvements\n");
+        prompt.append("   - Bug Fixes\n");
+        prompt.append("   - Other Changes (if necessary)\n");
+        prompt.append("2. Use simple, non-technical language—avoid technical jargon or implementation details.\n");
+        prompt.append("3. Focus on the benefits or impact of each change for the user.\n");
+        prompt.append("4. If helpful, incorporate relevant context from JIRA comments, but ensure all descriptions are anonymous and free of personal or sensitive data.\n");
+        prompt.append("5. Do **not** include ticket numbers (e.g., PROJ-123) unless essential for user understanding, and even then, present them generically.\n");
+        prompt.append("6. Begin with a short, friendly introduction summarizing the purpose and highlights of this release (e.g., new functionality, performance upgrades, or fixes for known issues).\n");
+        prompt.append("7. Ensure the final output is fully compliant with GDPR (DSGVO)—do not include any personally identifiable information or references to individuals.\n");
+        prompt.append("8. Format the final release notes as clean, readable Markdown using appropriate headings and bullet points.\n\n");
 
-        prompt.append("**Changelog Data:**\n");
+        prompt.append("**Raw Change Data:**\n");
         prompt.append("```\n");
         prompt.append(changelogContent);
         prompt.append("\n```\n\n");
 
-        prompt.append("Please create a user-friendly release summary in markdown format:");
+        prompt.append("Now, generate the user-friendly, GDPR-compliant release summary in Markdown format:");
 
         return prompt.toString();
 

@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class LogFile {
 
-    private static final String CHANGELOG_FILE = "src\\main\\java\\CHANGELOG.md";
+    private static final String CHANGELOG_FILE = "src\\main\\java\\CHANGELOG_FILE.md";
 
     public void updateChangeLog(List<LogEntry> entrieList) throws IOException{
         Map<String, List<LogEntry>> grouped = new HashMap();

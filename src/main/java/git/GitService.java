@@ -60,7 +60,6 @@ public class GitService {
         return commits;
     }
 
-
     public String getLastTag() {
         try {
             Process process = new ProcessBuilder("git", "describe", "--tags", "--abbrev=0").start();
@@ -134,7 +133,7 @@ public class GitService {
         return commits;
     }
 
-    private String stripPrefix(String tag) {
+    public static String stripPrefix(String tag) {
         if (tag.startsWith("v")) {
             return tag.substring(1); // Supprime le préfixe 'v'
         }
