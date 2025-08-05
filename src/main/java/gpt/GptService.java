@@ -263,31 +263,87 @@ public class GptService {
 
     private String createChangelogPrompt(String changelogContent) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("You are a professional technical writer who specializes in creating clear, user-friendly, and comprehensive release notes for end users.\n\n");
-
-        prompt.append("Your task is to analyze the following unstructured changelog data, Git commit messages, and JIRA comments, and create a polished, easy-to-read release summary for a non-technical audience.\n");
-        prompt.append("The resulting summary must be informative, GDPR-compliant, and written in plain language.\n\n");
-
-        prompt.append("**Instructions:**\n");
-        prompt.append("1. Group related updates into clear categories:\n");
-        prompt.append("   - New Features\n");
-        prompt.append("   - Improvements\n");
-        prompt.append("   - Bug Fixes\n");
-        prompt.append("   - Other Changes (if necessary)\n");
-        prompt.append("2. Use simple, non-technical language—avoid technical jargon or implementation details.\n");
-        prompt.append("3. Focus on the benefits or impact of each change for the user.\n");
-        prompt.append("4. If helpful, incorporate relevant context from JIRA comments, but ensure all descriptions are anonymous and free of personal or sensitive data.\n");
-        prompt.append("5. Do **not** include ticket numbers (e.g., PROJ-123) unless essential for user understanding, and even then, present them generically.\n");
-        prompt.append("6. Begin with a short, friendly introduction summarizing the purpose and highlights of this release (e.g., new functionality, performance upgrades, or fixes for known issues).\n");
-        prompt.append("7. Ensure the final output is fully compliant with GDPR (DSGVO)—do not include any personally identifiable information or references to individuals.\n");
-        prompt.append("8. Format the final release notes as clean, readable Markdown using appropriate headings and bullet points.\n\n");
-
-        prompt.append("**Raw Change Data:**\n");
+//        prompt.append("You are a professional technical writer who specializes in creating clear, user-friendly, and comprehensive release notes for end users.\n\n");
+//
+//        prompt.append("Your task is to analyze the following unstructured changelog data, Git commit messages, and JIRA comments, and create a polished, easy-to-read release summary for a non-technical audience.\n");
+//        prompt.append("The resulting summary must be informative, GDPR-compliant, and written in plain language.\n\n");
+//
+//        prompt.append("**Instructions:**\n");
+//        prompt.append("1. Group related updates into clear categories:\n");
+//        prompt.append("   - New Features\n");
+//        prompt.append("   - Improvements\n");
+//        prompt.append("   - Bug Fixes\n");
+//        prompt.append("   - Other Changes (if necessary)\n");
+//        prompt.append("2. Use simple, non-technical language—avoid technical jargon or implementation details.\n");
+//        prompt.append("3. Focus on the benefits or impact of each change for the user.\n");
+//        prompt.append("4. If helpful, incorporate relevant context from JIRA comments, but ensure all descriptions are anonymous and free of personal or sensitive data.\n");
+//        prompt.append("5. Do **not** include ticket numbers (e.g., PROJ-123) unless essential for user understanding, and even then, present them generically.\n");
+//        prompt.append("6. Begin with a short, friendly introduction summarizing the purpose and highlights of this release (e.g., new functionality, performance upgrades, or fixes for known issues).\n");
+//        prompt.append("7. Ensure the final output is fully compliant with GDPR (DSGVO)—do not include any personally identifiable information or references to individuals.\n");
+//        prompt.append("8. Format the final release notes as clean, readable Markdown using appropriate headings and bullet points.\n\n");
+//
+//        prompt.append("**Raw Change Data:**\n");
+//        prompt.append("### Zielsetzung\n");
+//        prompt.append("Erstellen Sie präzise und informative Release Notes aus unstrukturierten Changelog-Daten, Git-Commit-Nachrichten und JIRA-Kommentaren für eine nicht-technische Zielgruppe, einschließlich Endbenutzern und Managern. Die Release Notes sollen sowohl in deutscher als auch in englischer Sprache verfasst werden.\n\n");
+//        prompt.append("### Rückgabe Format\n");
+//        prompt.append("Die Ergebnisse sind als gut strukturierte Markdown-Dokumente zu formatieren, die einzelne Änderungen klar gliedern und in einer neutralen und informativen Sprache verfasst sind. Achten Sie darauf, dass die Inhalte in beiden Sprachen konsistent übertragen werden.\n\n");
+//        prompt.append("### Warnungen\n");
+//        prompt.append("1. Betrachten Sie im Kontext nur die Änderungen und deren direkten Auswirkungen auf die Benutzer.\n");
+//        prompt.append("2. Achten Sie darauf, dass die Notes DSGVO-konform sind und vermeiden Sie persönlich-identifizierbare Informationen oder sensible Daten.\n");
+//        prompt.append("3. Setzen Sie realistische Erwartungen an die Details, die aus den Änderungen abgeleitet werden können, und beschränken Sie sich auf die wesentlichen Informationen.\n\n");
+//        prompt.append("### Context Dump\n");
+//        prompt.append("**Anweisungen:**\n");
+//        prompt.append("1. Gruppieren Sie verwandte Updates in klare Kategorien:\n");
+//        prompt.append("   - Neue Funktionen / New Features\n");
+//        prompt.append("   - Verbesserungen / Improvements\n");
+//        prompt.append("   - Fehlerbehebungen / Bug Fixes\n");
+//        prompt.append("   - Sonstige Änderungen / Other Changes (falls notwendig)\n\n");
+//        prompt.append("2. Verwenden Sie einfache, nicht-technische Sprache – vermeiden Sie technischen Jargon oder unnötige Details zur Implementierung in beiden Sprachen.\n");
+//
+//        prompt.append("3. Fokussieren Sie sich auf die Vorteile oder Auswirkungen jeder Änderung für den Endbenutzer in beiden Sprachen.\n");
+//        prompt.append("4. Integrieren Sie relevante Kontexte aus den JIRA-Kommentaren, stellen Sie jedoch sicher, dass alle Beschreibungen anonym und ohne persönliche oder sensible Daten sind.\n");
+//        prompt.append("5. Fügen Sie keine Ticketnummern (z. B. PROJ-123) hinzu, es sei denn, sie sind für das Verständnis der Änderungen unbedingt erforderlich. Wenn ja, präsentieren Sie diese dann generisch.\n");
+//        prompt.append("6. Beginnen Sie mit einer kurzen, freundlichen Einführung, die den Zweck und die Höhepunkte dieses Releases zusammenfasst (z. B. neue Funktionalitäten, Leistungsverbesserungen oder Behebungen bekannter Probleme) in beiden Sprachen.\n");
+//        prompt.append("7. Stellen Sie sicher, dass das endgültige Ergebnis vollständig DSGVO-konform ist und keine persönlich-identifizierbaren Informationen oder Verweise auf Einzelpersonen enthält.\n");
+//        prompt.append("8. Formatieren Sie die endgültigen Release Notes als sauberes, lesbares Markdown mit angemessenen Überschriften und Aufzählungspunkten in beiden Sprachen.\n\n");
+//        prompt.append("### Eingabe \n");
+//        prompt.append("<Eingabebereich für den Text des Nutzers>\n\n");
+//        prompt.append("### Umsetzbare Schritte:\n");
+//        prompt.append("1. Analysieren Sie zunächst die gesammelten Daten aus Git und JIRA, um den Inhalt zu strukturieren.\n");
+//        prompt.append("2. Sammeln Sie relevante Aspekte zu jeder Änderung, bevor Sie mit dem Schreiben beginnen.\n");
+//        prompt.append("3. Verwenden Sie eine einfache Sprache, um den Schreibprozess zu führen, vermeiden Sie technische Begriffe in beiden Sprachen.\n");
+//        prompt.append("4. Überprüfen Sie die fertigen Notes auf die Einhaltung der DSGVO-Richtlinien.\n");
+//        prompt.append("5. Fügen Sie die Formatierung für Markdown hinzu, bevor Sie die Release Notes veröffentlichen.\n");
+        prompt.append("Du bist ein sehr präzises, direktes Sprachmodell mit hohem analytischen Verständnis. Deine Aufgabe:\n");
+        prompt.append("### Ziel\n");
+        prompt.append("Erstelle Release Notes für eine **nicht-technische Zielgruppe** (Enduser, Manager), basierend auf unstrukturierten Changelog-Daten, Git‑Commit‑Texten und anonymisierten JIRA-Kommentaren.\n\n");
+        prompt.append("### Anforderungen\n");
+        prompt.append("- Gruppiere alle Änderungen in diese Kategorien:\n");
+        prompt.append("  - Neue Funktionen\n");
+        prompt.append("  - Verbesserungen\n");
+        prompt.append("  - Fehlerbehebungen\n");
+        prompt.append("  - Sonstige (optional)\n");
+        prompt.append("- Formuliere **kurz, klar und ohne Jargon**, Schwerpunkt auf Nutzen für den Nutzer.\n");
+        prompt.append("- Verzichte auf tech‑Details; beschreibe Effekte und Vorteile.\n");
+        prompt.append("- Halte dich **DSGVO‑konform**: keine personenbezogenen Daten oder Ticketnummern (außer generisch, falls unbedingt nötig).\n");
+        prompt.append("- Nutze anonymisierte Hinweise aus JIRA-Kommentaren, ohne Namen.\n");
+        prompt.append("- Beginne mit einer kurzen, freundlichen **Einführung** mit Highlights des Releases.\n");
+        prompt.append("- Verwende **Markdown‑Formatierung** mit Überschriften und Stichpunkten.\n");
+        prompt.append("- Gib eine empfohlene Länge von **max. 250 Wörtern** vor.\n\n");
+        prompt.append("### Vorgehensweise\n");
+        prompt.append("1. Analysiere alle Eingabedaten (Changelog, Commits, JIRA-Kommentare).\n");
+        prompt.append("2. Identifiziere Änderungen, gruppiere sie wie oben.\n");
+        prompt.append("3. Formuliere die Notes in einfachem, nutzerzentriertem Stil.\n");
+        prompt.append("4. Überprüfe das Ergebnis auf DSGVO-Konformität.\n");
+        prompt.append("5. Füge Markdown‑Formatierung hinzu und liefere die Release Notes.\n\n");
+        prompt.append("### Rückgabe\n");
+        prompt.append("- Nutze direkt diesen gesamten Prompt beim Ausführen.\n");
+        prompt.append("- Begründe optional kurz (2–3 Sätze), warum du diese Struktur gewählt hast.\n");
         prompt.append("```\n");
         prompt.append(changelogContent);
         prompt.append("\n```\n\n");
 
-        prompt.append("Now, generate the user-friendly, GDPR-compliant release summary in Markdown format:");
+        //prompt.append("Now, generate the user-friendly, GDPR-compliant release summary in Markdown format:");
 
         return prompt.toString();
 

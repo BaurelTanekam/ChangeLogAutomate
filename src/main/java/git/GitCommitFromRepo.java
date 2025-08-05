@@ -46,6 +46,63 @@ public class GitCommitFromRepo {
         return commits;
     }
 
+    public List<GitCommit> fetchLimitedCommits(int limit) throws IOException {
+        if (limit < 0){
+            throw new IllegalArgumentException("The limit must be greater than 0.");
+        }
+
+        List<GitCommit> commits = new ArrayList<>();
+        String url = API_URL +  OWNER + "/" + REPO + "/commits?per_page=100";
+        int commitCount = 0;
+
+        while (url != null && commitCount < limit){
+            PaginatedResponse response = fetchCommitsFromUrl(url);
+            JSONArray commitArray = response.getData();
+
+            for (int i = 0; i < commitArray.length() && commitCount < limit; i++) {
+                JSONObject commitObj = commitArray.getJSONObject(i);
+                String sha = commitObj.getString("sha");
+                String message = commitObj.getJSONObject("commit").getString("message");
+                commits.add(new GitCommit(sha, message));
+                commitCount++;
+            }
+            url = (commitCount < limit) ? response.getNextUrl() : null;
+        }
+        System.out.printf("Total commits fetched: %d(requested: %d)%n", commitCount, limit);
+        return commits;
+    }
+
+    public List<GitCommit> fetchCommitsByTicket(List<GitCommit> commits, String ticketNummer){
+        if (ticketNummer == null || ticketNummer.trim().isEmpty()){
+            throw new IllegalArgumentException("Ticket number cannot be null or empty.");
+        }
+
+        String formattedTicket = ticketNummer.startsWith("[") && ticketNummer.endsWith("]") ? ticketNummer
+                : "["+ ticketNummer + "]";
+        List<GitCommit> filteredCommits = new ArrayList<>();
+        for (GitCommit commit : commits){
+            if (commit.getMessage().contains(formattedTicket)) filteredCommits.add(commit);
+        }
+        System.out.println("Filtered " + filteredCommits.size() + " commits containing ticket: " + formattedTicket);
+        return filteredCommits;
+    }
+
+    public List<GitCommit> fetchCommitsByTicketList(List<GitCommit> commits, List<String> ticketsList){
+        if (ticketsList == null || ticketsList.isEmpty()){
+            System.out.println("empty or null ticket list provided.");
+            return new ArrayList<>();
+        }
+        List<GitCommit> filteredCommits = new ArrayList<>();
+        for (String ticket : ticketsList) {
+            if (ticket != null && !ticket.trim().isEmpty()){
+                List<GitCommit> commitsByTicket = fetchCommitsByTicket(commits, ticket);
+
+                filteredCommits.addAll(commitsByTicket);
+            }
+        }
+        return filteredCommits;
+    }
+
     public List<GitCommit> getCommitsBeforeTag(String tagName) throws IOException {
         if (tagName == null || tagName.trim().isEmpty()){
             throw new IllegalArgumentException("TagName cannot be null.");
@@ -353,7 +410,7 @@ public class GitCommitFromRepo {
         }
         conn.setRequestProperty("Accept", "application/vnd.github+json");
         //conn.setRequestProperty("X-GitHub-Api-Version", "2022-11-28");
-        conn.setRequestProperty("User-Agent", "BaurelTanekam");
+        conn.setRequestProperty("User-Agent", "baurel.tanekam@medien-systempartner");
     }
 
     private PaginatedResponse fetchCommitsFromUrl(String url) throws IOException {

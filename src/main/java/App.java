@@ -30,16 +30,6 @@ public class App {
         issues.add("NWTDL-556");
         issues.add("NWTDL-554");
         issues.add("NWTDL-553");
-        issues.add("NWTDL-551");
-        issues.add("NWTDL-549");
-        issues.add("NWTDL-546");
-        issues.add("NWTDL-545");
-        issues.add("NWTDL-542");
-        issues.add("NWTDL-544");
-        issues.add("NWTDL-527");
-        issues.add("NWTDL-539");
-        issues.add("NWTDL-537");
-        issues.add("NWTDL-468");
 
 //        try{
 //            System.out.println("\"=== Issue complète ===\"");
@@ -62,21 +52,21 @@ public class App {
 //        }
 //        LogService logService = new LogService();
 //        logService.generateChangelog(true);
-//        GptService gptService = new GptService("src/main/java");
-//        try {
-//            gptService.processChangeLog("src/main/java/CHANGELOG.md");
-//        } catch (GptService.ChatGPTException e) {
-//            throw new RuntimeException(e);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
-        GitCommitFromRepo gitCommitFromRepo = new GitCommitFromRepo(Ressources.NAME_REPO, Ressources.OWNER_REPO);
+        GptService gptService = new GptService("src/main/java");
         try {
-            gitCommitFromRepo.testConnection();
-            //gitCommitFromRepo.generateChangeLogForDistantRepo(gitCommitFromRepo.fetchAllCommits(), "src/main/java/CHANGELOG_FILE.md");
+            gptService.processChangeLog("src/main/java/CHANGELOG_FILE.md");
+        } catch (GptService.ChatGPTException e) {
+            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+//
+//        GitCommitFromRepo gitCommitFromRepo = new GitCommitFromRepo(Ressources.NAME_REPO, Ressources.OWNER_REPO);
+//        try {
+//            //gitCommitFromRepo.testConnection();
+//            gitCommitFromRepo.generateChangeLogForDistantRepo(gitCommitFromRepo.fetchCommitsByTicketList(gitCommitFromRepo.fetchAllCommits(), issues), "src/main/java/CHANGELOG_FILE.md");
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 }
