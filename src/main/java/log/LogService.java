@@ -25,6 +25,22 @@ public class LogService {
     }
 
     //fetchCommitsBeforeTag = true || fetchCommitsBeforetag = false
+    /**
+     * Generiert automatisch ein Changelog basierend auf den Commits im Git-Repository.
+     *
+     * Schritte:
+     * Überprüft, ob die aktuelle Umgebung ein gültiges Git-Repository ist.
+     * Ruft abhängig vom Parameter `fetchCommitsBeforeTag` entweder:
+     *    - Die Commits VOR dem letzten Tag ab, oder
+     *    - Die Commits SEIT dem letzten Tag.
+     * Wenn keine neuen Commits vorhanden sind, beendet die Methode.
+     * Erhöht die Version im Changelog und verarbeitet die Commits zu strukturierten Log-Einträgen (`LogEntry`).
+     * Aktualisiert das bestehende Changelog und fügt die neue Version hinzu (mit den neuen Änderungen).
+     * Schließt ggf. die HTTP-Verbindung (falls JIRA genutzt wurde).
+     * Gibt Erfolgsmeldungen aus oder behandelt Fehler, falls etwas schiefgeht.
+     *
+     * @param fetchCommitsBeforeTag Wenn `true`, werden Commits vor dem letzten Tag betrachtet. Andernfalls werden Commits seit dem letzten Tag betrachtet.
+     */
     public void generateChangelog(boolean fetchCommitsBeforeTag){
         try {
 
@@ -54,10 +70,10 @@ public class LogService {
                 return;
             }
 
-            JiraService issue = fetcher.fetchIssue("MSPINTERN-2551");
-            if (issue.getComments() != null && !issue.getComments().isEmpty()){
-                logFile.addJiraCommentsToChangeLog(issue.getComments());
-            }
+//            JiraService issue = fetcher.fetchIssue("MSPINTERN-2551");
+//            if (issue.getComments() != null && !issue.getComments().isEmpty()){
+//                logFile.addJiraCommentsToChangeLog(issue.getComments());
+//            }
 
             //List<GitCommit> commits = gitService.getCommitsSinceLastVersion();
 
@@ -84,6 +100,17 @@ public class LogService {
         }
     }
 
+    /**
+     * Überprüft, ob die aktuelle Umgebung ein gültiges Git-Repository ist.
+     *
+     * Schritte:
+     * Führt den Git-Befehl `git rev-parse --git-dir` aus, der prüft, ob das aktuelle Verzeichnis ein Git-Repository ist.
+     * Wenn der Befehl erfolgreich ist (Exit-Code 0), wird eine Meldung über das erkannte Repository ausgegeben.
+     * Wenn der Befehl fehlschlägt, wird angegeben, dass kein Git-Repository gefunden wurde.
+     * Gibt `true` zurück, wenn sich das Skript in einem Git-Repository befindet, und `false` andernfalls.
+     *
+     * @return `true`, wenn ein Git-Repository erkannt wird, sonst `false`.
+     */
     private boolean isGitRepository(){
         try {
             ProcessBuilder pb = new ProcessBuilder("git", "rev-parse", "--git-dir");
@@ -110,6 +137,14 @@ public class LogService {
         System.out.println(string);
     }
 
+    /**
+     * Hilfsmethode, um eine Fehlermeldung ins Log (Konsole) zu schreiben.
+     *
+     * Zusätzlich wird ein Stacktrace ausgegeben, um eine detaillierte Fehlersuche zu ermöglichen.
+     *
+     * @param msg Die Fehlermeldung, die ins Log geschrieben werden soll.
+     * @param e Die verursachende Ausnahme (Exception), die ausgegeben werden soll.
+     */
     private void logError(String msg, Exception e){
         System.err.println(msg);
         e.printStackTrace();

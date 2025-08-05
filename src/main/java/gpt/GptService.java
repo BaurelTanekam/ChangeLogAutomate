@@ -33,7 +33,13 @@ public class GptService {
     private ObjectMapper objectMapper;
     private String API_KEY = Connexion.GPT;
     private String outPutDirectory;
-    
+
+    /**
+     * Konstruktor für den GptService.
+     * Initialisiert die benötigten Ressourcen wie das HTTP-Client, den JSON-Mapper, und erstellt das Ausgabe-Verzeichnis.
+     *
+     * @param outPutDirectory Das Verzeichnis, in dem Ausgabedateien gespeichert werden sollen.
+     */
     public GptService(String outPutDirectory){
         this.outPutDirectory = outPutDirectory;
         this.httpClient = HttpClients.createDefault();
@@ -45,7 +51,20 @@ public class GptService {
             System.err.println("Warning: Could not create output directory: " + e.getMessage());
         }
     }
-    
+
+    /**
+     * Verarbeitet ein Changelog-File und erstellt eine benutzerfreundliche Zusammenfassung mithilfe von ChatGPT.
+     *
+     * Schritte:
+     * Liest den Inhalt des Changelog-Files.
+     * Sendet eine Anfrage an das ChatGPT-API, um eine entsprechende Antwort zu erhalten.
+     * Speichert die Antwort als Markdown-Datei in das festgelegte Ausgabe-Verzeichnis.
+     *
+     * @param changeLogFilePath Der Pfad zum Changelog-File, das verarbeitet werden soll.
+     * @return Die von ChatGPT generierte Zusammenfassung als String.
+     * @throws ChatGPTException Wenn die Datei leer ist oder ein Fehler bei der Verarbeitung durch das ChatGPT-API auftritt.
+     * @throws IOException Wenn ein Fehler beim Zugriff auf das Changelog-File auftritt.
+     */
     public String processChangeLog(String changeLogFilePath) throws ChatGPTException, IOException {
         System.out.println("Processing changelog file: " + changeLogFilePath);
         
@@ -56,7 +75,7 @@ public class GptService {
         }
         
         //Create prompt for ChatGPT
-        String prompt = createChangelogPrompt(changelogContent);
+        String prompt = changelogPrompt(changelogContent);
         
         //send Request to ChatGPT
         String response = sendChatGPTRequest(prompt);
@@ -70,7 +89,19 @@ public class GptService {
     }
 
     /**
-     * Process changelog with additional JIRA context
+     * Verarbeitet ein Changelog-File, fügt zusätzlichen JIRA-Kontext hinzu und erstellt eine benutzerfreundliche Zusammenfassung.
+     *
+     * Schritte:
+     * Liest den Inhalt des Changelogs und prüft, ob es gültig ist.
+     * Generiert einen erweiterten Prompt, der den Inhalt des Changelogs und zusätzliche JIRA-Kommentare kombiniert.
+     * Sendet diesen erweiterten Prompt an das ChatGPT-API, um eine Antwort zu generieren.
+     * Speichert die Antwort als Markdown-Datei in das festgelegte Ausgabe-Verzeichnis.
+     *
+     * @param changelogFilePath Der Pfad zum Changelog-File.
+     * @param jiraComments Eine Liste von zusätzlichen Kommentaren aus JIRA-Tickets.
+     * @return Die von ChatGPT generierte erweiterte Zusammenfassung als String.
+     * @throws ChatGPTException Wenn das Changelog leer ist oder ein Fehler beim Verarbeiten der Anfrage auftritt.
+     * @throws IOException Wenn ein Fehler beim Lesen des Changelog-Files auftritt.
      */
     public String processChangelogWithJiraContext(String changelogFilePath, List<String> jiraComments)
             throws IOException, ChatGPTException {
@@ -96,6 +127,20 @@ public class GptService {
         return response;
     }
 
+    /**
+     * Sendet eine Anfrage (Prompt) an die ChatGPT-API und erhält die generierte Antwort.
+     *
+     * Schritte:
+     * Erstellt eine HTTP POST-Anfrage mit dem Prompt als JSON-Body.
+     * Definiert einen ResponseHandler, der die Antwort interpretiert und auf Fehler prüft.
+     * Falls die Antwort erfolgreich ist, wird sie gelesen und zurückgegeben.
+     * Falls die Antwort ein Fehler ist (z. B. 400, 401, 429), wird dieser entsprechend behandelt.
+     *
+     * @param prompt Der von der Anwendung generierte Prompt, der an die ChatGPT-API gesendet werden soll.
+     * @return Die Antwort von der ChatGPT-API als String.
+     * @throws IOException Wenn ein Fehler bei der Anfrage oder der Verarbeitung auftritt.
+     * @throws ChatGPTException Wenn ein spezifischer Fehler von der ChatGPT-API auftritt.
+     */
     private String sendChatGPTRequest(String prompt) throws IOException, ChatGPTException, JsonProcessingException {
         System.out.println("Sending request to ChatGPT API... ");
 
@@ -153,6 +198,18 @@ public class GptService {
         }
     }
 
+    /**
+     * Behandelt mögliche API-Fehler, die von der ChatGPT-API zurückgegeben werden.
+     *
+     * Schritte:
+     * Analysiert den Statuscode (z. B. 401, 429, 500) und wirft eine geeignete Ausnahme mit einer detaillierten Nachricht.
+     * Falls die Antwort einen Fehler im JSON-Format enthält, wird die Fehlermeldung extrahiert.
+     * Gibt einen allgemeinen Fehler zurück, falls der Statuscode unbekannt ist.
+     *
+     * @param statusCode Der von der API zurückgegebene HTTP-Statuscode.
+     * @param responseBody Der Body der HTTP-Antwort, der den Fehler beschreibt.
+     * @throws ChatGPTException Wenn ein spezifischer Fehler auftritt.
+     */
     private void handleApierror(int statusCode, String responseBody) throws ChatGPTException, JsonProcessingException {
         String errorMessage = "ChatGPT API Error: " + statusCode;
 
@@ -176,6 +233,19 @@ public class GptService {
 
     }
 
+    /**
+     * Verarbeitet die Antwort von der ChatGPT-API und extrahiert die nutzbare Antwort.
+     *
+     * Schritte:
+     * Liest die JSON-Daten von der API-Antwort.
+     * Überprüft, ob ein `error`-Feld vorhanden ist. Wenn ja, wird ein spezifischer Fehler ausgelöst.
+     * Extrahiert den Inhalt des `choices`-Arrays und gibt die erste Antwort zurück.
+     * Falls keine Antwort verfügbar ist oder der Inhalt leer ist, wird ein Fehler ausgelöst.
+     *
+     * @param responseBody Der JSON-Body der Antwort von der ChatGPT-API.
+     * @return Der extrahierte Text aus der API-Antwort.
+     * @throws ChatGPTException Wenn keine gültige Antwort verfügbar ist.
+     */
     private String parseChatGPTResponse(String responseBody) throws ChatGPTException, JsonProcessingException {
         JsonNode root = objectMapper.readTree(responseBody);
 
@@ -202,11 +272,29 @@ public class GptService {
 
     }
 
+    /**
+     * Generiert einen eindeutigen Dateinamen für die Ausgabedatei basierend auf dem aktuellen Datum.
+     *
+     * @param s Eine benutzerdefinierte Beschreibung, die im Dateinamen verwendet wird (z. B. "with-jira-context").
+     * @return Der generierte Dateiname im Format `release-<Beschreibung>-<Datum>.md`.
+     */
     private String generateOutputFileName(String s) {
         String timeStamp = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         return "release-" + s + "-" + timeStamp + ".md";
     }
 
+    /**
+     * Erstellt einen erweiterten Prompt für ChatGPT, der das Changelog und zusätzliche JIRA-Kommentare kombiniert.
+     *
+     * Schritte:
+     * Fügt allgemeine Anweisungen hinzu (z. B. Erstellen einer benutzerfreundlichen Zusammenfassung).
+     * Integriert den Inhalt des Changelogs.
+     * Falls JIRA-Kommentare vorhanden sind, integriert sie ebenfalls in den Prompt.
+     *
+     * @param changelogContent Der Textinhalt des Changelogs.
+     * @param jiraComments Eine Liste von zusätzlichen Kommentaren aus JIRA-Tickets.
+     * @return Der erstellte erweiterte Prompt als String.
+     */
     private String createEnhancedPrompt(String changelogContent, List<String> jiraComments) {
         StringBuilder prompt = new StringBuilder();
         prompt.append("You are a technical writer creating user-friendly release notes. ");
@@ -243,6 +331,18 @@ public class GptService {
 
     }
 
+    /**
+     * Speichert die ChatGPT-Antwort in einer Markdown-Datei im Ausgabe-Verzeichnis.
+     *
+     * Schritte:
+     * Erstellt den vollständigen Pfad der Datei basierend auf dem Ausgabe-Verzeichnis und dem Dateinamen.
+     * Formatiert den Inhalt als Markdown (Kopfzeile, Trennlinien, Antwortinhalt).
+     * Schreibt den formatierten Inhalt in die Datei (erstellt sie, falls sie nicht existiert).
+     *
+     * @param response Die Antwort, die in der Datei gespeichert werden soll.
+     * @param outPutFileName Der Name der Ausgabedatei.
+     * @throws IOException Wenn ein Fehler beim Schreiben der Datei auftritt.
+     */
     private void saveMarkdownFile(String response, String outPutFileName) throws IOException {
         Path outputPath = Paths.get(outPutDirectory, outPutFileName);
 
@@ -257,11 +357,24 @@ public class GptService {
         System.out.println("Markdown file saved: " + outputPath.toAbsolutePath());
     }
 
+    /**
+     * Erzeugt standardmäßig den Dateinamen für eine allgemeine Zusammenfassung.
+     * Verwendet `generateOutputFileName` mit dem Standardwert "Summary".
+     *
+     * @return Der erzeugte Dateiname im Format "release-Summary-<Datum>.md".
+     */
     private String genetrateOutputFileName() {
         return generateOutputFileName("Summary");
     }
 
-    private String createChangelogPrompt(String changelogContent) {
+    /**
+     * Erstellt einen Prompt für ChatGPT, der nur auf dem Changelog basiert.
+     * Bietet grundlegende Anweisungen, wie der Inhalt des Changelogs in benutzerfreundliche Release Notes umgewandelt werden soll.
+     *
+     * @param changelogContent Der Textinhalt des Changelogs.
+     * @return Der erstellte Prompt als String.
+     */
+    private String changelogPrompt(String changelogContent) {
         StringBuilder prompt = new StringBuilder();
 //        prompt.append("You are a professional technical writer who specializes in creating clear, user-friendly, and comprehensive release notes for end users.\n\n");
 //
@@ -349,6 +462,13 @@ public class GptService {
 
     }
 
+    /**
+     * Liest den Inhalt einer Datei und gibt ihn als String zurück.
+     *
+     * @param changeLogFilePath Der Pfad zur Datei, die gelesen werden soll.
+     * @return Der gesamte Dateinhalt als String.
+     * @throws IOException Wenn die Datei nicht existiert oder nicht gelesen werden kann.
+     */
     private String readFile(String changeLogFilePath) throws IOException {
         Path path = Paths.get(changeLogFilePath);
         if (!Files.exists(path)){
@@ -359,6 +479,20 @@ public class GptService {
         return new String(bytes);
     }
 
+    /**
+     * Verarbeitet mehrere Changelog-Dateien und generiert eine Zusammenfassung für jede.
+     *
+     * Schritte:
+     * Iteriert durch die Liste der übergebenen Datei-Pfade.
+     * Verarbeitet jede Datei mit `processChangeLog`.
+     * Fügt die Ergebnisse in eine Liste ein.
+     * Gibt die Liste der Ergebnisse zurück.
+     *
+     * @param changelogFiles Eine Liste von Datei-Pfaden zu Changelogs.
+     * @return Eine Liste der generierten ChatGPT-Antworten.
+     * @throws IOException Wenn ein Fehler beim Verarbeiten einer Datei auftritt.
+     * @throws ChatGPTException Wenn ein Fehler bei der Verarbeitung durch ChatGPT auftritt.
+     */
     public List<String> processMultipleChangeLogs(List<String> changelogFiles) throws IOException, ChatGPTException {
         List<String> results = new ArrayList<>();
 
@@ -381,6 +515,9 @@ public class GptService {
         return results;
     }
 
+    /**
+     * Eine benutzerdefinierte Ausnahme für Fehler, die bei der Verarbeitung von ChatGPT-Anfragen auftreten.
+     */
     public static class ChatGPTException extends Exception{
         public ChatGPTException(String message){
             super(message);

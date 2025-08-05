@@ -35,6 +35,23 @@ public class JiraIssueFetcher {
         this.authHeader = baseToken;
     }
 
+    /**
+     * Ruft eine JIRA-Issue basierend auf ihrem Issue-Key über die JIRA-API ab.
+     *
+     * Schritte:
+     * Baut die Anfrage-URL für die JIRA-Issue-Details.
+     * Sendet die HTTP GET-Anfrage an JIRA.
+     * Liest die Antwort und prüft:
+     *    - Antwortstatus (z. B. 200 OK).
+     *    - Antwortinhalt (ob es sich um gültiges JSON handelt).
+     * Wenn die Antwort gültig ist, ruft die `parseJiraIssue`-Methode auf, um die Daten in ein JiraService-Objekt zu konvertieren.
+     *
+     * @param issueKey Der Schlüssel der JIRA-Issue (z. B. "PROJ-123").
+     * @return Ein `JiraService`-Objekt, das die Issue-Details enthält.
+     * @throws IOException Wenn ein Problem mit der Verbindung oder Verarbeitung der Antwort auftritt.
+     * @throws JiraException Wenn die API einen spezifischen Fehler zurückgibt (z. B. 404 oder 401).
+     * @throws ProtocolException Wenn ein Problem mit dem HTTP-Protokoll auftritt.
+     */
     public JiraService fetchIssue(String issueKey) throws IOException, JiraException, ProtocolException {
         String url = jiraBaseUrl + "rest/api/latest/issue/" + issueKey + "?fields=" + FIELDS;
 
@@ -97,6 +114,18 @@ public class JiraIssueFetcher {
         }
     }
 
+    /**
+     * Ruft mehrere JIRA-Issues basierend auf einer Liste von Issue-Keys ab.
+     *
+     * Schritte:
+     * Iteriert durch die Liste der bereitgestellten `issueKeys`.
+     * Ruft jede Issue mit der Methode `fetchIssue` ab.
+     * Fängt Fehler beim Abruf einzelner Issues ab und fährt mit den verbleibenden Issues fort.
+     * Gibt eine Liste aller erfolgreich abgerufenen Issues zurück.
+     *
+     * @param issueKeys Eine Liste von JIRA-Issue-Keys (z. B. "PROJ-123", "PROJ-456").
+     * @return Eine Liste von `JiraService`-Objekten, die die Details zu den Issues enthalten.
+     */
     public List<JiraService> fetchMultplesIssues(List<String> issueKeys){
         //Store issue
         List<JiraService> issues = new ArrayList<>();
@@ -119,6 +148,20 @@ public class JiraIssueFetcher {
         return issues;
     }
 
+    /**
+     * Analysiert die API-Antwort und konvertiert sie in ein `JiraService`-Objekt.
+     *
+     * Schritte:
+     * Liest die JSON-Daten aus der gegebenen Antwort (responseBody).
+     * Überprüft und extrahiert die Felder (z. B. Priority, Status, Assignee).
+     * Fügt zugehörige Kommentare hinzu, falls welche vorhanden sind.
+     * Gibt das vollständig aufgebaute `JiraService`-Objekt zurück.
+     *
+     * @param responseBody Die API-Antwort als JSON-String.
+     * @param issueKey Der Schlüssel der Issue (z. B. "PROJ-123").
+     * @return Ein Objekt `JiraService`, das die Details der Issue abbildet.
+     * @throws IOException Wenn ein Fehler beim Analysieren des JSON-Strings auftritt.
+     */
     private JiraService parseJiraIssue(String responseBody, String issueKey) throws IOException {
 
         try{
@@ -176,11 +219,31 @@ public class JiraIssueFetcher {
 
     }
 
+    /**
+     * Extrahiert den Wert eines bestimmten JSON-Felds als String.
+     *
+     * @param node Das JSON-Node-Objekt, aus dem der Wert extrahiert werden soll.
+     * @param fieldName Der Name des Felds im JSON-Objekt.
+     * @return Der extrahierte Wert als String oder `null`, falls das Feld fehlt.
+     */
     private String getTextValue(JsonNode node, String fieldName) {
         JsonNode field = node.path(fieldName);
         return field.isMissingNode() ? null : field.asText();
     }
 
+    /**
+     * Analysiert den "comment"-Node einer API-Antwort und wandelt ihn in eine Liste von `JiraComment`-Objekten um.
+     *
+     * Schritte:
+     * Überprüft, ob der Knoten gültig ist (nicht leer oder NULL).
+     * Iteriert über das Array von Kommentaren und:
+     *    - Extrahiert Felder wie den Autor, den Erstellungs- und Aktualisierungszeitpunkt und den Inhalt des Kommentars.
+     *    - Fügt jedes Kommentar in ein JiraComment-Objekt ein.
+     * Gibt alle analysierten Kommentare als Liste zurück.
+     *
+     * @param commentNode Der JSON-Node, der die Kommentare enthält.
+     * @return Eine Liste von JiraComment-Objekten.
+     */
     private List<JiraComment> parseComments(JsonNode commentNode) {
     List<JiraComment> comments = new ArrayList<>();
 
@@ -213,6 +276,12 @@ public class JiraIssueFetcher {
     return comments;
 }
 
+    /**
+     * Konvertiert einen Zeitstempel im ISO8601-Format in ein `LocalDateTime`-Objekt.
+     *
+     * @param dateString Der Zeitstempel als String.
+     * @return Ein `LocalDateTime`-Objekt, das die gegebene Zeit repräsentiert, oder `null`, wenn die Eingabe ungültig ist.
+     */
     private LocalDateTime parseDateTime(String dateString) {
         if (dateString == null || dateString.isEmpty()){
             return null;
@@ -224,12 +293,27 @@ public class JiraIssueFetcher {
         }
     }
     //TODO Immer die Http Verbindung zumachen
+    /**
+     * Schließt den HTTP-Client, um Ressourcen freizugeben.
+     *
+     * @throws IOException Wenn ein Fehler beim Schließen des Clients auftritt.
+     */
     public void closeHttp() throws IOException{
         if (httpClient != null){
             httpClient.close();
         }
     }
 
+    /**
+     * Holt und druckt die Details einer JIRA-Issue auf die Konsole.
+     *
+     * Schritte:
+     * Ruft die Methode `fetchIssue` mit dem angegebenen Issue-Key auf.
+     * Gibt die Details der Issue auf die Konsole aus.
+     * Handhabt mögliche Fehler, die beim Abrufen der Issue auftreten können.
+     *
+     * @param issueKey Der Schlüssel der JIRA-Issue (z. B. "PROJ-123").
+     */
     public void printIssue(String issueKey) {
         try {
             JiraService issue = fetchIssue(issueKey);

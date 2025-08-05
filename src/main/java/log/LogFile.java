@@ -18,6 +18,18 @@ public class LogFile {
 
     private static final String CHANGELOG_FILE = "src\\main\\java\\CHANGELOG_FILE.md";
 
+    /**
+     * Aktualisiert das Changelog, indem neue Änderungen hinzugefügt werden.
+     *
+     * Schritte:
+     * Gruppiert die Einträge (`LogEntry`) nach Kategorien (z. B. "Added", "Fixed").
+     * Generiert einen neuen Abschnitt `## [Unreleased]`, welcher die neuesten Änderungen enthält.
+     * Liest das bestehende Changelog und fügt diese älteren Inhalte unter den neuen Bereich hinzu.
+     * Speichert das gesamte aktualisierte Changelog in der Datei.
+     *
+     * @param entrieList Die Liste der Einträge (`LogEntry`), die im Changelog hinzugefügt werden sollen.
+     * @throws IOException Wenn ein Problem beim Lesen oder Schreiben der Datei auftritt.
+     */
     public void updateChangeLog(List<LogEntry> entrieList) throws IOException{
         Map<String, List<LogEntry>> grouped = new HashMap();
 
@@ -60,6 +72,17 @@ public class LogFile {
 
     }
 
+    /**
+     * Liest das bestehende Changelog und fügt seinen Inhalt in den neuen Inhalt ein.
+     *
+     * Schritte:
+     * Öffnet die bestehende Changelog-Datei (`CHANGELOG_FILE`), wenn sie existiert.
+     * Sucht nach der ersten Version im bestehenden Changelog (z. B. `## [1.0.0]`).
+     * Fügt alle Zeilen ab der gefundenen Version in den neuen Inhalt ein.
+     *
+     * @param content Der neue Inhalt des Changelogs, in das das bestehende Changelog eingefügt wird.
+     * @throws IOException Wenn ein Problem beim Lesen der bestehenden Datei auftritt.
+     */
     private void appendexistingChangeLog(StringBuilder content) throws IOException {
         
         Path path = Paths.get(CHANGELOG_FILE);
@@ -81,6 +104,20 @@ public class LogFile {
         }
     }
 
+    /**
+     * Fügt dem Changelog eine neue Version hinzu.
+     *
+     * Schritte:
+     * Erstellt einen neuen Abschnitt für die angegebene Version (z. B. `## [2.0.1] - <Datum>`).
+     * Gruppiert die Einträge (`entries`) nach Kategorien (mithilfe der Methode `groupedByCategory`).
+     * Fügt die neuen Änderungen in die Kategorien ein, z. B. "### Added", "### Fixed".
+     * Liest das bestehende Changelog und fügt es nach dem neuen Abschnitt ein.
+     * Speichert das aktualisierte Changelog in die Datei.
+     *
+     * @param version Die neue Version, die hinzugefügt werden soll (z. B. `2.0.1`).
+     * @param entries Die Liste der Einträge (`LogEntry`), die der Version zugeordnet sind.
+     * @throws IOException Wenn ein Problem beim Lesen oder Schreiben der Datei auftritt.
+     */
     public void addReleaseVersionToChangeLog(String version, List<LogEntry> entries) throws IOException {
         StringBuilder content = new StringBuilder();
 
@@ -106,6 +143,17 @@ public class LogFile {
         System.out.println("Changelog updated with version: " + version);
     }
 
+    /**
+     * Gruppiert die Einträge (`LogEntry`) nach ihren Kategorien.
+     *
+     * Schritte:
+     * Iteriert durch die gegebenen Entries.
+     * Fügt jeden Eintrag in die passende Kategorie ein (z. B. "Added", "Fixed").
+     * Gibt die Einträge in einer Map zurück, wobei der Schlüssel die Kategorie ist.
+     *
+     * @param entries Eine Liste von LogEntries, die gruppiert werden sollen.
+     * @return Eine Map, die die Kategorien (`key`) und ihre zugehörigen Einträge (`value`) enthält.
+     */
     private Map<String, List<LogEntry>> groupedByCategory(List<LogEntry> entries) {
         Map<String, List<LogEntry>> grouped = new HashMap<>();
         for (LogEntry entry : entries){
@@ -114,6 +162,22 @@ public class LogFile {
         return grouped;
     }
 
+    /**
+     * Fügt neue JIRA-Kommentare zum Changelog hinzu.
+     *
+     * Schritte:
+     * Überprüft, ob es gültige JIRA-Kommentare gibt. Falls NEIN, gibt die Methode eine Meldung aus und beendet.
+     * Liest das existierende Changelog und speichert dessen Inhalt.
+     * Prüft, ob ein Abschnitt `## Jira Comments` bereits existiert.
+     * Wenn der Abschnitt existiert:
+     *    - Fügt die neuen Kommentare am Ende des Abschnitts `## Jira Comments` hinzu.
+     * Wenn der Abschnitt nicht existiert:
+     *    - Erstellt einen neuen Abschnitt `## Jira Comments` und fügt die neuen Kommentare hinzu.
+     * Schreibt das aktualisierte Changelog in die Datei.
+     *
+     * @param jiraComments Die Liste von JIRA-Kommentaren (`JiraComment`), die hinzugefügt werden sollen.
+     * @throws IOException Wenn ein Problem beim Lesen oder Schreiben des Changelogs auftritt.
+     */
     public void addJiraCommentsToChangeLog(List<JiraComment> jiraComments) throws IOException {
         //Verify
         if (jiraComments == null || jiraComments.isEmpty()){
